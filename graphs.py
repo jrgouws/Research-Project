@@ -92,7 +92,7 @@ class MMs():
         total = 0
         
         for i in range(0, self.s):
-            total += (((self.s * self.p)**i)/(math.factorial(i)) + ((self.s * self.p)**self.s)/(math.factorial(self.s)*(1-self.p)))**(-1)
+            total += 1/((((self.s*self.U)**i)/math.factorial(i)) + (((self.s*self.U)**self.s)/(math.factorial(self.s)))*(1-self.U))
         
         return total
     
@@ -155,13 +155,13 @@ class MMI():
         return math.exp(-1*self.p)
     
     def calc_Pn(self):
-        return self.P0* (self.p ** self.n)/(math.factorial(self.n))
+        return self.P0* (self.U ** self.n)/(math.factorial(self.n))
     
     def calc_W(self):
         return 1/self.mu
     
     def calc_L(self):
-        return self.p
+        return self.U
         
     def recalc(self):
         self.p    = self.calc_p(self.lamb, self.mu)
@@ -205,29 +205,211 @@ print("L  =", mm2.L)
 ############## Utilization (x-axis) vs Response time (y-axis) vs  #############
 ##############       (single and multi-server comparison)         #############
 ###############################################################################
-
 # Utilization = U   (x-axis)
 # Response time = W (y-axis)
+plt.figure(1) 
 
-customers = 5
-lamb      = np.arange(1,64,1)
+customers = 1000
+
 mu        = 65 
 
+x = []
+y = []
 
-x1 = []
-y1 = []
+servers = [2,5,10,20]
 
-for i in range(len(lamb)):
-    mm1 = MM1(lamb[i], mu, customers)    
-    x1.append(mm1.U)
-    y1.append(mm1.W)
-    
+lamb = np.linspace(0.01, (mu -1) ,1000)
+
+tempX = []
+tempY = []
+for i in range(0, len(lamb)):
+      mm1 = MM1(lamb[i], mu, customers)    
+      tempX.append(mm1.U)
+      tempY.append(mm1.W)
+x.append(tempX)
+y.append(tempY)
+
+for j in servers:
+      lamb = np.linspace(0.01, (mu -1) * j,1000)
+      tempX = []
+      tempY = []
+      
+      for i in range(0, len(lamb)):    
+            mm2 = MMs(lamb[i], mu, customers, j)
+            tempX.append(mm2.U)
+            tempY.append(mm2.W)
+      
+      x.append(tempX)
+      y.append(tempY)
+      
+for i in range(0, len(x)):
+      if (i == 0):
+            plt.plot(x[i], y[i], label=str('M/M/1'))      
+      else:
+            plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
+
+plt.legend(loc='best')
 plt.xlabel('Utilization (U)')
 plt.ylabel('Response time (W)')
 plt.title('Utilization vs Response time (y-axis)\n for single and multi server models')
-plt.figure(1)    
-plt.plot(x1, y1)
+plt.show()
 
+
+###############################################################################
+##########################   Throughput (lambda) vs number customers ##########
+###############################################################################
+
+# Throughput/lambda   (x-axis)
+# Num customers L     (y-axis)
+plt.figure(2) 
+
+customers = 5
+mu        = 65 
+
+x = []
+y = []
+
+servers = [2,5,10,20]
+
+lamb = np.linspace(0.01, (mu -1) ,1000)
+
+tempX = []
+tempY = []
+for i in range(0, len(lamb)):
+      mm1 = MM1(lamb[i], mu, customers)    
+      tempX.append(mm1.L)
+      tempY.append(mm1.lamb)
+x.append(tempX)
+y.append(tempY)
+
+for j in servers:
+      lamb = np.linspace(0.01, (mu -1) * j,1000)
+      tempX = []
+      tempY = []
+      
+      for i in range(0, len(lamb)):    
+            mm2 = MMs(lamb[i], mu, customers, j)
+            tempX.append(mm2.L)
+            tempY.append(mm2.lamb)
+      
+      x.append(tempX)
+      y.append(tempY)
+      
+for i in range(0, len(x)):
+      if (i == 0):
+            plt.plot(x[i], y[i], label=str('M/M/1'))      
+      else:
+            plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
+
+plt.legend(loc='best')
+plt.xlabel('Number of customers (L)')
+plt.ylabel('Throughput (lambda)')
+plt.title('Number of customers vs Throughput\n for single and multi server models')
+plt.show()
+
+###############################################################################
+##########################   Response time (W) vs number customers   ##########
+###############################################################################
+
+# Response time (W)   (x-axis)
+# Num customers L     (y-axis)
+plt.figure(3)
+
+customers = 5
+mu        = 65 
+
+x = []
+y = []
+
+servers = [2,5,10,20]
+
+lamb = np.linspace(0.01, (mu -1) ,1000)
+
+tempX = []
+tempY = []
+for i in range(0, len(lamb)):
+      mm1 = MM1(lamb[i], mu, customers)    
+      tempX.append(mm1.L)
+      tempY.append(mm1.W)
+x.append(tempX)
+y.append(tempY)
+
+for j in servers:
+      lamb = np.linspace(0.01, (mu -1) * j,1000)
+      tempX = []
+      tempY = []
+      
+      for i in range(0, len(lamb)):    
+            mm2 = MMs(lamb[i], mu, customers, j)
+            tempX.append(mm2.L)
+            tempY.append(mm2.W)
+      
+      x.append(tempX)
+      y.append(tempY)
+      
+for i in range(0, len(x)):
+      if (i == 0):
+            plt.plot(x[i], y[i], label=str('M/M/1'))      
+      else:
+            plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
+
+plt.legend(loc='best')
+plt.xlabel('Number of customers (L)')
+plt.ylabel('Response time (W)')
+plt.title('Number of customers vs Response time\n for single and multi server models')
+plt.show()
+
+###############################################################################
+##########################   Utilization vs number customers ##########
+###############################################################################
+
+# Utilization (U)     (x-axis)
+# Num customers L     (y-axis)
+plt.figure(4)  
+
+customers = 5
+mu        = 65 
+
+x = []
+y = []
+
+servers = [2,5,10,20]
+
+lamb = np.linspace(0.01, (mu -1) ,1000)
+
+tempX = []
+tempY = []
+for i in range(0, len(lamb)):
+      mm1 = MM1(lamb[i], mu, customers)    
+      tempX.append(mm1.L)
+      tempY.append(mm1.U)
+x.append(tempX)
+y.append(tempY)
+
+for j in servers:
+      lamb = np.linspace(0.01, (mu -1) * j,1000)
+      tempX = []
+      tempY = []
+      
+      for i in range(0, len(lamb)):    
+            mm2 = MMs(lamb[i], mu, customers, j)
+            tempX.append(mm2.L)
+            tempY.append(mm2.U)
+      
+      x.append(tempX)
+      y.append(tempY)
+      
+for i in range(0, len(x)):
+      if (i == 0):
+            plt.plot(x[i], y[i], label=str('M/M/1'))      
+      else:
+            plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
+
+plt.legend(loc='best')
+plt.xlabel('Number of customers (L)')
+plt.ylabel('Utilization (U)')
+plt.title('Number of customers vs Utilization\n for single and multi server models')
+plt.show()
 
     
 

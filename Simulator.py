@@ -151,7 +151,7 @@ if (debug == True):
     # Get the parameters
     arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
           
-    print("Arrival times of the packets...........",arrivalTimes)
+    print("Arrival times of the packets...........", arrivalTimes)
     print("Transmission times of the packets......", transTimes)
     print("Response times of the packet...........", respTimes)
     print("Start and end times of the packets.....", startEnd)
@@ -160,7 +160,7 @@ if (debug == True):
 
 else:
     allQueues = []
-    capacities = [0.990, 0.995, 1.00, 1.005, 1.010]
+    capacities = [1.00]
     
     time = []
     
@@ -175,13 +175,18 @@ else:
         sizeAvg = sum(packetSize) / float(len(packetSize))
             
         if (transCap == 1*10**6):
-            print("Number of packets ---------------", len(packetSize))
-            print("The average packet size is ------", sizeAvg, "bits")
-            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays))
-            print("Average arrival time ------------", arrivalTimes[-1]/len(packetSize))
-            print("Average service time ------------", sizeAvg/transCap)
+            print("Link capacity --------------------", transCap, "bps") 
+            print("Number of packets ---------------", len(packetSize), "packets" )
+            print("Average inter-arrival time ------", sum(interArrival)/len(interArrival), "us" )
+            print("Average transmission time -------", sum(transTimes)/len(transTimes), "us" )
+            print("Average response time -----------", sum(respTimes)/len(respTimes), "us" )
+            print("The average packet size is ------", sizeAvg, "bits" )
+            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays), "us")
+            print("Average arrival rate (lambda)----", arrivalTimes[-1]/len(packetSize) )
+            print("Average service rate (mu) -------", transCap/sizeAvg)
+            
         
-        time.append(np.arange(0, startEnd[-1][1], 10000000))
+        time.append(np.arange(0, startEnd[-1][1], 100000))
         queue = []
         
         for i in range(0, len(time[z])):
@@ -210,5 +215,5 @@ else:
 
 listReturned = generateSizeList(500, 50)
 print(sum(listReturned)/len(listReturned))
-print(listReturned)
-print(np.random.exponential(size = 50)*10**6)
+# print(listReturned)
+# print(np.random.exponential(size = 5))
