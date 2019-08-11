@@ -6,8 +6,11 @@ Created on Mon Aug  5 15:15:31 2019
 """
 
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
+import random
 
-debug = True
+debug = False
 
 # Read the text file and the inter-arrival time and the size
 def readCSV(filePath):
@@ -47,7 +50,7 @@ def calculateParameters(interArrival, packetSize, transCap):
         else:
             arrivalTimes.append(interArrival[i] + arrivalTimes[i - 1])
     
-    # Calculate how long each packet takes to transmit
+    # Calculate how long each packet takes to transmit ?????????
     for i in packetSize:
         transTimes.append(i/transCap*10**6)
     
@@ -87,6 +90,29 @@ def calculateParameters(interArrival, packetSize, transCap):
         respTimes.append(startEnd[i][1] - startEnd[i][0] + queuingDelays[i])
   
     return arrivalTimes, transTimes, queuingDelays, startEnd, idleTimes, respTimes
+
+def generateSizeList(averageSize, listLength):
+    
+    returnList = [averageSize] * listLength
+    
+    for i in range(0,3):
+        for j in range(0, listLength):
+            indexOne = random.randint(0,listLength - 1)
+            indexTwo = random.randint(0,listLength - 1)
+            
+            maxValue = min(returnList[indexOne], returnList[indexTwo])            
+            maxValue = random.randint(0,maxValue)
+            
+            if (random.randint(0,1) == 0):
+                returnList[indexOne] -= maxValue
+                returnList[indexTwo] += maxValue
+            
+            else:
+                returnList[indexOne] += maxValue
+                returnList[indexTwo] -= maxValue
+                
+    return returnList
+            
 
 # List of inter-arrival times of the packages received
 interArrival = []
@@ -133,19 +159,56 @@ if (debug == True):
     print("System idel times are .................", idleTimes)
 
 else:
-    # Read the csv file data into respective lists to store the data
-    interArrival, packetSize = readCSV('trace.txt')
+    allQueues = []
+    capacities = [0.990, 0.995, 1.00, 1.005, 1.010]
     
-    # Get the parameters
-    arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
+    time = []
     
-    # Get the average arrival time of the csv file
-    print("The average arrival time is", sum(interArrival) / float(len(interArrival)), "us")
-    
-    # Get the average packet size
-    sizeAvg = sum(packetSize) / float(len(packetSize))
-    print("The average packet size is", sizeAvg, "bits")
-    
-    # Get the average service time
-    print("The average service time is (avg packet size)/(link capacity)",
-          sizeAvg/transCap*10**6, "packets/sec")
+    for z in range(0, len(capacities)):
+        transCap = capacities[z] * 10 ** 6
+        
+        # Read the csv file data into respective lists to store the data
+        interArrival, packetSize = readCSV('trace.txt')
+        
+        # Get the parameters
+        arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
+        sizeAvg = sum(packetSize) / float(len(packetSize))
+            
+        if (transCap == 1*10**6):
+            print("Number of packets ---------------", len(packetSize))
+            print("The average packet size is ------", sizeAvg, "bits")
+            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays))
+            print("Average arrival time ------------", arrivalTimes[-1]/len(packetSize))
+            print("Average service time ------------", sizeAvg/transCap)
+        
+        time.append(np.arange(0, startEnd[-1][1], 10000000))
+        queue = []
+        
+        for i in range(0, len(time[z])):
+            length = 0
+            for j in range(0, len(startEnd)):
+                if (time[z][i] >= arrivalTimes[j] and startEnd[j][1] > time[z][i]):
+                    if (startEnd[j][0] > arrivalTimes[j]):
+                        length += 1
+            queue.append(length)            
+        
+        
+        allQueues.append(queue)
+        
+    for i in range(0, len(allQueues)):
+        plt.plot(time[i], allQueues[i], label=str(capacities[i]) + 'Mbps')
+    plt.legend(loc='best')
+    plt.xlabel('Time (microseconds)')
+    plt.ylabel('Customers waiting in queue')
+    plt.title('Time vs number of customers waiting in a M/M/1 queue\n of different link capacities')
+    plt.show()
+
+
+
+
+
+
+listReturned = generateSizeList(500, 50)
+print(sum(listReturned)/len(listReturned))
+print(listReturned)
+print(np.random.exponential(size = 50)*10**6)
