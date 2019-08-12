@@ -85,16 +85,17 @@ class MMs():
         return lamb/mu
     
     def calc_U(self, lamb, mu):
-        return lamb/(mu*self.s)
+        return self.p/self.s
     
     def calc_P0(self):
         
         total = 0
         
         for i in range(0, self.s):
-            total += 1/((((self.s*self.U)**i)/math.factorial(i)) + (((self.s*self.U)**self.s)/(math.factorial(self.s)*(1-self.U))))
+            total += (((self.s*self.U)**i)/math.factorial(i)) + (((self.s*self.U)**self.s)/(math.factorial(self.s)*(1-self.U)))
         
-        return total
+        
+        return 1/total
     
     def calc_Pn(self):
         returnVal = 0
@@ -155,13 +156,13 @@ class MMI():
         return math.exp(-1*self.p)
     
     def calc_Pn(self):
-        return self.P0* (self.U ** self.n)/(math.factorial(self.n))
+        return self.P0* (self.p ** self.n)/(math.factorial(self.n))
     
     def calc_W(self):
         return 1/self.mu
     
     def calc_L(self):
-        return self.U
+        return self.p
         
     def recalc(self):
         self.p    = self.calc_p(self.lamb, self.mu)
@@ -185,32 +186,17 @@ print("Wq =", mm1.Wq)
 print("W  =", mm1.W)
 print("L  =", mm1.L)
 
-###############################################################################    
-#############################    M/M/s testing  ###############################
-###############################################################################
 
-mm2 = MMs(50, 65, 1, 2)
-
-print("##############      MM2     ######################")
-print("p  =", mm2.p)
-print("U  =", mm2.U)
-print("P0 =", mm2.P0)
-print("Pn =", mm2.Pn)
-print("Lq =", mm2.Lq)
-print("Wq =", mm2.Wq)
-print("W  =", mm2.W)
-print("L  =", mm2.L)
-    
 ###############################################################################
 ############## Utilization (x-axis) vs Response time (y-axis) vs  #############
 ##############       (single and multi-server comparison)         #############
 ###############################################################################
 # Utilization = U   (x-axis)
 # Response time = W (y-axis)
+
 plt.figure(1) 
 
-customers = 1000
-
+customers = 100
 mu        = 65 
 
 x = []
@@ -218,33 +204,42 @@ y = []
 
 servers = [2,5,10,20]
 
-lamb = np.linspace(0.01, (mu -1) ,1000)
+#########################    M/M/1       ######################################
 
-tempX = []
-tempY = []
-for i in range(0, len(lamb)):
-      mm1 = MM1(lamb[i], mu, customers)    
-      tempX.append(mm1.U)
-      tempY.append(mm1.W)
-x.append(tempX)
-y.append(tempY)
+lamb = np.linspace(0.01, (mu -1), 1000)
+
+mm1 = MM1(lamb, mu, customers)    
+     
+x.append(mm1.U)
+y.append(mm1.W)
+
+#########################    M/M/s       ######################################
 
 for j in servers:
-      lamb = np.linspace(0.01, (mu -1) * j,1000)
-      tempX = []
-      tempY = []
-      
-      for i in range(0, len(lamb)):    
-            mm2 = MMs(lamb[i], mu, customers, j)
-            tempX.append(mm2.U)
-            tempY.append(mm2.W)
-      
-      x.append(tempX)
-      y.append(tempY)
-      
+    lamb = np.linspace(0.01, (mu -1) * j, 1000)
+    mm2 = MMs(lamb, mu, customers, j)
+    x.append(mm2.U)
+    y.append(mm2.W)
+    
+#########################    M/M/inf     ######################################
+lamb = np.linspace(0.01, (mu -1), 1000)
+xTemp = []
+yTemp = []
+
+for i in range(0, len(lamb)):
+    mmi = MMI(lamb[i], mu, customers)
+    xTemp.append(mmi.U)
+    yTemp.append(mmi.W)
+
+x.append(xTemp)
+y.append(yTemp)
+
 for i in range(0, len(x)):
       if (i == 0):
-            plt.plot(x[i], y[i], label=str('M/M/1'))      
+            plt.plot(x[i], y[i], label=str('M/M/1'))
+            
+      elif (i == len(x) - 1):
+            plt.plot(x[i], y[i], label=str('M/M/inf' ))
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
@@ -263,42 +258,44 @@ plt.show()
 # Throughput/lambda   (x-axis)
 # Num customers L     (y-axis)
 plt.figure(2) 
-
-customers = 5
-mu        = 65 
-
 x = []
 y = []
 
-servers = [2,5,10,20]
+#########################    M/M/1       ######################################
 
 lamb = np.linspace(0.01, (mu -1) ,1000)
+mm1 = MM1(lamb, mu, customers)    
+x.append(mm1.L)
+y.append(mm1.lamb)
 
-tempX = []
-tempY = []
-for i in range(0, len(lamb)):
-      mm1 = MM1(lamb[i], mu, customers)    
-      tempX.append(mm1.L)
-      tempY.append(mm1.lamb)
-x.append(tempX)
-y.append(tempY)
+#########################    M/M/s       ######################################
 
 for j in servers:
       lamb = np.linspace(0.01, (mu -1) * j,1000)
-      tempX = []
-      tempY = []
-      
-      for i in range(0, len(lamb)):    
-            mm2 = MMs(lamb[i], mu, customers, j)
-            tempX.append(mm2.L)
-            tempY.append(mm2.lamb)
-      
-      x.append(tempX)
-      y.append(tempY)
-      
+      mm2 = MMs(lamb, mu, customers, j)
+      x.append(mm2.L)
+      y.append(mm2.lamb)
+
+#########################    M/M/inf     ######################################
+lamb = np.linspace(0.01, (mu -1), 1000)
+
+xTemp = []
+yTemp = []
+
+for i in range(0, len(lamb)):
+    mmi = MMI(lamb[i], mu, customers)
+    xTemp.append(mmi.L)
+    yTemp.append(mmi.lamb)
+
+x.append(xTemp)
+y.append(yTemp)
+
 for i in range(0, len(x)):
       if (i == 0):
-            plt.plot(x[i], y[i], label=str('M/M/1'))      
+            plt.plot(x[i], y[i], label=str('M/M/1'))
+            
+      elif (i == len(x) - 1):
+            plt.plot(x[i], y[i], label=str('M/M/inf' ))
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
@@ -315,42 +312,46 @@ plt.show()
 # Response time (W)   (x-axis)
 # Num customers L     (y-axis)
 plt.figure(3)
-
-customers = 5
-mu        = 65 
-
 x = []
 y = []
 
-servers = [2,5,10,20]
-
+#########################    M/M/1       ######################################
 lamb = np.linspace(0.01, (mu -1) ,1000)
 
-tempX = []
-tempY = []
-for i in range(0, len(lamb)):
-      mm1 = MM1(lamb[i], mu, customers)    
-      tempX.append(mm1.L)
-      tempY.append(mm1.W)
-x.append(tempX)
-y.append(tempY)
+mm1 = MM1(lamb, mu, customers)    
+      
+x.append(mm1.L)
+y.append(mm1.W)
+
+#########################    M/M/s       ######################################
 
 for j in servers:
-      lamb = np.linspace(0.01, (mu -1) * j,1000)
-      tempX = []
-      tempY = []
+    lamb = np.linspace(0.01, (mu -1) * j,1000)
+    mm2 = MMs(lamb, mu, customers, j)
+    x.append(mm2.L)
+    y.append(mm2.W)
+    
+    
+#########################    M/M/inf     ######################################
       
-      for i in range(0, len(lamb)):    
-            mm2 = MMs(lamb[i], mu, customers, j)
-            tempX.append(mm2.L)
-            tempY.append(mm2.W)
-      
-      x.append(tempX)
-      y.append(tempY)
-      
+lamb = np.linspace(0.01, (mu -1), 1000)
+xTemp = []
+yTemp = []
+
+for i in range(0, len(lamb)):
+    mmi = MMI(lamb[i], mu, customers)
+    xTemp.append(mmi.L)
+    yTemp.append(mmi.W)
+
+x.append(xTemp)
+y.append(yTemp)
+
 for i in range(0, len(x)):
       if (i == 0):
-            plt.plot(x[i], y[i], label=str('M/M/1'))      
+            plt.plot(x[i], y[i], label=str('M/M/1'))
+            
+      elif (i == len(x) - 1):
+            plt.plot(x[i], y[i], label=str('M/M/inf' ))
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
@@ -366,43 +367,45 @@ plt.show()
 
 # Utilization (U)     (x-axis)
 # Num customers L     (y-axis)
+
 plt.figure(4)  
-
-customers = 5
-mu        = 65 
-
 x = []
 y = []
 
-servers = [2,5,10,20]
-
+#########################    M/M/1       ######################################
 lamb = np.linspace(0.01, (mu -1) ,1000)
+mm1 = MM1(lamb, mu, customers)    
+x.append(mm1.L)
+y.append(mm1.U)
 
-tempX = []
-tempY = []
-for i in range(0, len(lamb)):
-      mm1 = MM1(lamb[i], mu, customers)    
-      tempX.append(mm1.L)
-      tempY.append(mm1.U)
-x.append(tempX)
-y.append(tempY)
+#########################    M/M/s       ######################################
 
 for j in servers:
       lamb = np.linspace(0.01, (mu -1) * j,1000)
-      tempX = []
-      tempY = []
+      mm2 = MMs(lamb, mu, customers, j)
+      x.append(mm2.L)
+      y.append(mm2.U)
+  
+#########################    M/M/inf     ######################################
       
-      for i in range(0, len(lamb)):    
-            mm2 = MMs(lamb[i], mu, customers, j)
-            tempX.append(mm2.L)
-            tempY.append(mm2.U)
-      
-      x.append(tempX)
-      y.append(tempY)
-      
+lamb = np.linspace(0.01, (mu -1), 1000)
+xTemp = []
+yTemp = []
+
+for i in range(0, len(lamb)):
+    mmi = MMI(lamb[i], mu, customers)
+    xTemp.append(mmi.L)
+    yTemp.append(mmi.U)
+
+x.append(xTemp)
+y.append(yTemp)
+
 for i in range(0, len(x)):
       if (i == 0):
-            plt.plot(x[i], y[i], label=str('M/M/1'))      
+            plt.plot(x[i], y[i], label=str('M/M/1'))
+            
+      elif (i == len(x) - 1):
+            plt.plot(x[i], y[i], label=str('M/M/inf' ))
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
@@ -411,7 +414,6 @@ plt.xlabel('Number of customers (L)')
 plt.ylabel('Utilization (U)')
 plt.title('Number of customers vs Utilization\n for single and multi server models')
 plt.show()
-
 
 
 
