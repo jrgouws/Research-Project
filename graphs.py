@@ -92,7 +92,7 @@ class MMs():
         total = 0
         
         for i in range(0, self.s):
-            total += 1/((((self.s*self.U)**i)/math.factorial(i)) + (((self.s*self.U)**self.s)/(math.factorial(self.s)))*(1-self.U))
+            total += 1/((((self.s*self.U)**i)/math.factorial(i)) + (((self.s*self.U)**self.s)/(math.factorial(self.s)*(1-self.U))))
         
         return total
     
@@ -248,6 +248,7 @@ for i in range(0, len(x)):
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
+plt.axis([0,1.0,0,1.0])
 plt.legend(loc='best')
 plt.xlabel('Utilization (U)')
 plt.ylabel('Response time (W)')
@@ -411,6 +412,6 @@ plt.ylabel('Utilization (U)')
 plt.title('Number of customers vs Utilization\n for single and multi server models')
 plt.show()
 
-    
+
 
 
