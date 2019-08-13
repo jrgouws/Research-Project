@@ -210,8 +210,22 @@ else:
     plt.show()
 '''
 
-def Simulator(packetSize, linkCap):
-    workloads = [100000, 90000, 80000, 70000, 60000, 50000, 40000, 30000, 20000, 10000]
+def Simulator(packetSz, linkCap):
+    serviceRate = linkCap/packetSz
+    simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+    arrRate = []
+    avgInterArr = []
+    
+    for i in simPerc:
+          arrRate.append(i*serviceRate)
+          avgInterArr.append(10**6/arrRate[-1])
+          
+    # Calculate the packet sizes to generate      
+    workloads = []
+    for i in arrRate:
+          workloads.append(i*100)
+    
+    
     total = []
     queueDel = [0]* len(workloads)    
     time = []
@@ -219,34 +233,17 @@ def Simulator(packetSize, linkCap):
     for p in range(0,100):
         print(p)
         allQueues = []
-        averageIntArrival = 100000000 / np.asarray(workloads)
-        
         
         for z in range(0, len(workloads)):
             transCap = linkCap
             
             # Read the csv file data into respective lists to store the data
-            interArrival = np.random.exponential(averageIntArrival[z], workloads[z])
-            packetSize = np.random.exponential(1000, workloads[z])
+            interArrival = np.random.exponential(int(avgInterArr[z]), int(workloads[z]))
+            packetSize = np.random.exponential(int(packetSz), int(workloads[z]))
                 
             # Get the parameters
             arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
            
-            #sizeAvg = sum(packetSize) / float(len(packetSize))
-            #print(sizeAvg, arrivalTimes[-1])
-            
-            '''
-            print("Link capacity --------------------", transCap, "bps") 
-            print("Number of packets ---------------", len(packetSize), "packets" )
-            print("Average inter-arrival time ------", sum(interArrival)/len(interArrival), "us" )
-            print("Average transmission time -------", sum(transTimes)/len(transTimes), "us" )
-            print("Average response time -----------", sum(respTimes)/len(respTimes), "us" )
-            print("The average packet size is ------", sizeAvg, "bits" )
-            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays), "us")
-            print("Average arrival rate (lambda)----", arrivalTimes[-1]/len(packetSize) )
-            print("Average service rate (mu) -------", transCap/sizeAvg)
-            '''
-            
             queueDel[z] += sum(queuingDelays)/len(queuingDelays)
             
             if (p == 0):
@@ -279,7 +276,7 @@ def Simulator(packetSize, linkCap):
             total[i][j] /= 100
         
         
-    queueDel = np.asarray(queueDel)/100      
+    queueDel = np.asarray(queueDel)/100
     
     print(queueDel)    
             
@@ -292,13 +289,5 @@ def Simulator(packetSize, linkCap):
     plt.title('Time vs number of customers waiting in a M/M/1 queue\n of different link workloads')
     plt.show()
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-Simulator(1000, 1*10**6)
+
+Simulator(1000, 100*10**6)
