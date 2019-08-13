@@ -230,7 +230,7 @@ def Simulator(packetSz, linkCap):
     queueDel = [0]* len(workloads)    
     time = []
 
-    for p in range(0,100):
+    for p in range(0,10):
         print(p)
         allQueues = []
         
@@ -247,7 +247,7 @@ def Simulator(packetSz, linkCap):
             queueDel[z] += sum(queuingDelays)/len(queuingDelays)
             
             if (p == 0):
-                time.append(np.arange(0, startEnd[-1][1] + 10000000, 10000000))
+                time.append(np.arange(0, startEnd[-1][1], 1000000))
             
                        
             queue = []
@@ -273,10 +273,10 @@ def Simulator(packetSz, linkCap):
 
     for i in range(0, len(allQueues)):
         for j in range(0, len(allQueues[i])):
-            total[i][j] /= 100
+            total[i][j] /= 10
         
         
-    queueDel = np.asarray(queueDel)/100
+    queueDel = np.asarray(queueDel)/10
     
     print(queueDel)    
             
