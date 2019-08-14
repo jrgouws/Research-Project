@@ -8,10 +8,12 @@ Created on Mon Aug  5 15:15:31 2019
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-import random
 
-debug = False
-
+test =        False
+doTrace =     True
+doQueuelen =  False
+doLambdMus  = True
+genTrace =    False
 # Read the text file and the inter-arrival time and the size
 def readCSV(filePath):
     arrival = []
@@ -91,126 +93,36 @@ def calculateParameters(interArrival, packetSize, transCap):
   
     return arrivalTimes, transTimes, queuingDelays, startEnd, idleTimes, respTimes
 
-'''
-def generateSizeList(averageSize, listLength):
+
+
+
+def generateTrace(workload, linkCap, packetSz):
+    serviceRate = linkCap/packetSz
+    #simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+    arrRate = []
+    avgInterArr = []
     
-    returnList = [averageSize] * listLength
     
-    for i in range(0,3):
-        for j in range(0, listLength):
-            indexOne = random.randint(0,listLength - 1)
-            indexTwo = random.randint(0,listLength - 1)
-            
-            maxValue = min(returnList[indexOne], returnList[indexTwo])            
-            maxValue = random.randint(0,maxValue)
-            
-            if (random.randint(0,1) == 0):
-                returnList[indexOne] -= maxValue
-                returnList[indexTwo] += maxValue
-            
-            else:
-                returnList[indexOne] += maxValue
-                returnList[indexTwo] -= maxValue
-                
-    return returnList
-'''            
-
-# List of inter-arrival times of the packages received
-interArrival = []
-
-# List of the size in bits of the packages received
-packetSize = []
-
-# Time of arrival of each packet, corresponding to the index positions 
-arrivalTimes = []
-
-# Time to transmit each packet
-transTimes = []
-
-# Transmission Capacity of 1 Mbps
-transCap = 1 * 10 ** 6
-
-# Queuing delays of the packets
-queuingDelays = []   
-
-# Start and end time of service of packet
-startEnd = []
-
-# Server idle times
-idleTimes = []
-
-# Response times of each packet
-respTimes = []
-'''
-if (debug == True):
-    # Transmission Capacity of 10 Mbps
-    transCap = 10 * 10 ** 6
+    arrRate = workload * serviceRate
+    avgInterArr = 10**6/arrRate
     
-    # Read the csv file data into respective lists to store the data
-    interArrival, packetSize = readCSV('example.txt')
+    workloads = arrRate*100
+        
+    interArrival = np.random.exponential(int(avgInterArr), int(workloads))
+    packetSize = np.random.exponential(int(packetSz), int(workloads))
     
-    # Get the parameters
-    arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
-          
-    print("Arrival times of the packets...........", arrivalTimes)
-    print("Transmission times of the packets......", transTimes)
-    print("Response times of the packet...........", respTimes)
-    print("Start and end times of the packets.....", startEnd)
-    print("Queuing delays of the packets..........", queuingDelays)
-    print("System idel times are .................", idleTimes)
+    print(len(interArrival),"packets generated")
+    print("Mean inter-arrival generated = ", sum(interArrival)/len(interArrival))
+    print("Mean packet size   generated = ", sum(packetSize)/len(packetSize))
+    
+    with open('generatedTrace.txt', 'w') as writeFile:
+        writer = csv.writer(writeFile)
+        writer.writerows(zip(map(int,interArrival), map(int, packetSize)))
 
-else:
-    allQueues = []
-    capacities = [1.00]
-    
-    time = []
-    
-    for z in range(0, len(capacities)):
-        transCap = capacities[z] * 10 ** 6
-        
-        # Read the csv file data into respective lists to store the data
-        interArrival, packetSize = readCSV('trace.txt')
-        
-        # Get the parameters
-        arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
-        sizeAvg = sum(packetSize) / float(len(packetSize))
-            
-        if (transCap == 1*10**6):
-            print("Link capacity --------------------", transCap, "bps") 
-            print("Number of packets ---------------", len(packetSize), "packets" )
-            print("Average inter-arrival time ------", sum(interArrival)/len(interArrival), "us" )
-            print("Average transmission time -------", sum(transTimes)/len(transTimes), "us" )
-            print("Average response time -----------", sum(respTimes)/len(respTimes), "us" )
-            print("The average packet size is ------", sizeAvg, "bits" )
-            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays), "us")
-            print("Average arrival rate (lambda)----", arrivalTimes[-1]/len(packetSize) )
-            print("Average service rate (mu) -------", transCap/sizeAvg)
-            
-        
-        time.append(np.arange(0, startEnd[-1][1], 10000000))
-        queue = []
-        
-        for i in range(0, len(time[z])):
-            length = 0
-            for j in range(0, len(startEnd)):
-                if (time[z][i] >= arrivalTimes[j] and startEnd[j][1] > time[z][i]):
-                    if (startEnd[j][0] > arrivalTimes[j]):
-                        length += 1
-            queue.append(length)            
-        
-        
-        allQueues.append(queue)
-        
-    for i in range(0, len(allQueues)):
-        plt.plot(time[i], allQueues[i], label=str(capacities[i]) + 'Mbps')
-    plt.legend(loc='best')
-    plt.xlabel('Time (microseconds)')
-    plt.ylabel('Customers waiting in queue')
-    plt.title('Time vs number of customers waiting in a M/M/1 queue\n of different link capacities')
-    plt.show()
-'''
 
-def Simulator(packetSz, linkCap):
+
+
+def queuLenVsTime(packetSz, linkCap):
     serviceRate = linkCap/packetSz
     simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     arrRate = []
@@ -220,17 +132,16 @@ def Simulator(packetSz, linkCap):
           arrRate.append(i*serviceRate)
           avgInterArr.append(10**6/arrRate[-1])
           
-    # Calculate the packet sizes to generate      
+    # Calculate the amount of packet to generate (arrival rate * 100 sec)      
     workloads = []
     for i in arrRate:
           workloads.append(i*100)
     
-    
+   
     total = []
-    queueDel = [0]* len(workloads)    
     time = []
 
-    for p in range(0,10):
+    for p in range(0,100):
         print(p)
         allQueues = []
         
@@ -244,8 +155,7 @@ def Simulator(packetSz, linkCap):
             # Get the parameters
             arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
            
-            queueDel[z] += sum(queuingDelays)/len(queuingDelays)
-            
+           
             if (p == 0):
                 time.append(np.arange(0, startEnd[-1][1], 1000000))
             
@@ -273,14 +183,9 @@ def Simulator(packetSz, linkCap):
 
     for i in range(0, len(allQueues)):
         for j in range(0, len(allQueues[i])):
-            total[i][j] /= 10
+            total[i][j] /= 100
         
-        
-    queueDel = np.asarray(queueDel)/10
-    
-    print(queueDel)    
-            
-    plt.figure(10)
+    plt.figure()
     for i in range(0, len(total)):
         plt.plot(time[i], total[i], label=str(workloads[i]) + 'packets sent')
     plt.legend(loc='best')
@@ -289,5 +194,152 @@ def Simulator(packetSz, linkCap):
     plt.title('Time vs number of customers waiting in a M/M/1 queue\n of different link workloads')
     plt.show()
     
+def calcLambMuWorkloads(packetSz, linkCap):
+    serviceRate = linkCap/packetSz
+    simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+    arrRate = []
+    avgInterArr = []
+    
+    for i in simPerc:
+        arrRate.append(i*serviceRate)
+        avgInterArr.append(10**6/arrRate[-1])
+      
 
-Simulator(1000, 100*10**6)
+    workloads = []
+    for i in arrRate:
+        workloads.append(i*100)
+        
+    lambdas = [0] * len(workloads)    
+    mus = [0] * len(workloads)
+    queueDels = [0] * len(workloads)
+
+    for p in range(0,100):
+        print(p)
+        
+        for z in range(0, len(workloads)):
+            transCap = linkCap
+            
+            # Read the csv file data into respective lists to store the data
+            interArrival = np.random.exponential(int(avgInterArr[z]), int(workloads[z]))
+            packetSize = np.random.exponential(int(packetSz), int(workloads[z]))
+                
+            # Get the parameters
+            arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
+            sizeAvg = sum(packetSize) / float(len(packetSize))
+           
+            lambdas[z] += arrivalTimes[-1]/len(packetSize)
+            mus[z] += transCap/sizeAvg
+            queueDels[z] = sum(queuingDelays)/len(queuingDelays)
+    
+    lambdas = np.asarray(lambdas)/100
+    mus = np.asarray(mus)/100
+    queueDels = np.asarray(queueDels)/100
+    
+    print("Lambdas            at [10%. 20%, ...., 80%, 90%] workload =", lambdas)
+    print("Mu's               at [10%. 20%, ...., 80%, 90%] workload =", mus)
+    print("Avg queuing delays at [10%. 20%, ...., 80%, 90%] workload =", queueDels)
+
+
+# List of inter-arrival times of the packages received
+interArrival = []
+
+# List of the size in bits of the packages received
+packetSize = []
+
+# Time of arrival of each packet, corresponding to the index positions 
+arrivalTimes = []
+
+# Time to transmit each packet
+transTimes = []
+
+# Transmission Capacity of 1 Mbps
+transCap = 1 * 10 ** 6
+
+# Queuing delays of the packets
+queuingDelays = []   
+
+# Start and end time of service of packet
+startEnd = []
+
+# Server idle times
+idleTimes = []
+
+# Response times of each packet
+respTimes = []
+
+if (test == True):
+    # Transmission Capacity of 10 Mbps
+    transCap = 10 * 10 ** 6
+    
+    # Read the csv file data into respective lists to store the data
+    interArrival, packetSize = readCSV('example.txt')
+    
+    # Get the parameters
+    arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
+          
+    print("Arrival times of the packets...........", arrivalTimes)
+    print("Transmission times of the packets......", transTimes)
+    print("Response times of the packet...........", respTimes)
+    print("Start and end times of the packets.....", startEnd)
+    print("Queuing delays of the packets..........", queuingDelays)
+    print("System idel times are .................", idleTimes)
+
+if (doTrace == True):
+    allQueues = []
+    capacities = [1.00]
+    
+    time = []
+    
+    for z in range(0, len(capacities)):
+        transCap = capacities[z] * 10 ** 6
+        
+        # Read the csv file data into respective lists to store the data
+        interArrival, packetSize = readCSV('trace.txt')
+        
+        # Get the parameters
+        arrivalTimes,transTimes,queuingDelays,startEnd,idleTimes,respTimes = calculateParameters(interArrival, packetSize, transCap)
+        sizeAvg = sum(packetSize) / float(len(packetSize))
+            
+        if (transCap == 1*10**6):
+            print("Link capacity --------------------", transCap, "bps") 
+            print("Number of packets ---------------", len(packetSize), "packets" )
+            print("Average inter-arrival time ------", sum(interArrival)/len(interArrival), "us" )
+            print("Average transmission time -------", sum(transTimes)/len(transTimes), "us" )
+            print("Average response time -----------", sum(respTimes)/len(respTimes), "us" )
+            print("The average packet size is ------", sizeAvg, "bits" )
+            print("Average delays ------------------", sum(queuingDelays)/len(queuingDelays), "us")
+            print("Average arrival rate (lambda)----", arrivalTimes[-1]/len(packetSize) )
+            print("Average service rate (mu) -------", transCap/sizeAvg)
+            
+        
+        time.append(np.arange(0, startEnd[-1][1], 100000))
+        queue = []
+        
+        for i in range(0, len(time[z])):
+            length = 0
+            for j in range(0, len(startEnd)):
+                if (time[z][i] >= arrivalTimes[j] and startEnd[j][1] > time[z][i]):
+                    if (startEnd[j][0] > arrivalTimes[j]):
+                        length += 1
+            queue.append(length)            
+        
+        
+        allQueues.append(queue)
+        
+        
+    for i in range(0, len(allQueues)):
+        plt.plot(time[i], allQueues[i], label=str(capacities[i]) + 'Mbps')
+    plt.legend(loc='best')
+    plt.xlabel('Time (microseconds)')
+    plt.ylabel('Customers waiting in queue')
+    plt.title('Time vs number of customers waiting in a M/M/1 queue\n of different link capacities')
+    plt.show()
+
+if (doQueuelen == True):
+    queuLenVsTime(1000, 100*10**6)
+    
+if (doLambdMus == True):
+    calcLambMuWorkloads(1000, 10*10**6)
+
+if (genTrace == True):
+    generateTrace(0.5, 100*10**6, 1000)

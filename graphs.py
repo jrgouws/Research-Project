@@ -174,8 +174,11 @@ class MMI():
 ###############################################################################    
 #############################    M/M/1 testing  ###############################
 ###############################################################################
-
-mm1 = MM1(50, 65, 10)
+lambd = 50
+mu    = 65
+customers = 10
+print('')
+mm1 = MM1(lambd, mu, customers)
 print("##############      MM1     ######################")
 print("p  =", mm1.p)
 print("U  =", mm1.U)
@@ -186,6 +189,66 @@ print("Wq =", mm1.Wq)
 print("W  =", mm1.W)
 print("L  =", mm1.L)
 
+print('')
+mm2 = MMs(lambd, mu, customers, 2)
+print("##############      MM2     ######################")
+print("p  =", mm2.p)
+print("U  =", mm2.U)
+print("P0 =", mm2.P0)
+print("Pn =", mm2.Pn)
+print("Lq =", mm2.Lq)
+print("Wq =", mm2.Wq)
+print("W  =", mm2.W)
+print("L  =", mm2.L)
+
+print('')
+mm5 = MMs(lambd, mu, customers, 5)
+print("##############      MM5     ######################")
+print("p  =", mm5.p)
+print("U  =", mm5.U)
+print("P0 =", mm5.P0)
+print("Pn =", mm5.Pn)
+print("Lq =", mm5.Lq)
+print("Wq =", mm5.Wq)
+print("W  =", mm5.W)
+print("L  =", mm5.L)
+
+print('')
+mm10 = MMs(lambd, mu, customers, 10)
+print("##############      MM10    ######################")
+print("p  =", mm10.p)
+print("U  =", mm10.U)
+print("P0 =", mm10.P0)
+print("Pn =", mm10.Pn)
+print("Lq =", mm10.Lq)
+print("Wq =", mm10.Wq)
+print("W  =", mm10.W)
+print("L  =", mm10.L)
+
+print('')
+mm20 = MMs(lambd, mu, 10, 20)
+print("##############      MM20    ######################")
+print("p  =", mm20.p)
+print("U  =", mm20.U)
+print("P0 =", mm20.P0)
+print("Pn =", mm20.Pn)
+print("Lq =", mm20.Lq)
+print("Wq =", mm20.Wq)
+print("W  =", mm20.W)
+print("L  =", mm20.L)
+
+print('')
+mmI= MMI(lambd, mu, 10)
+print("##############      MMI     ######################")
+print("p  =", mmI.p)
+print("U  =", mmI.U)
+print("P0 =", mmI.P0)
+print("Pn =", mmI.Pn)
+print("Lq =", mmI.Lq)
+print("Wq =", mmI.Wq)
+print("W  =", mmI.W)
+print("L  =", mmI.L)
+
 
 ###############################################################################
 ############## Utilization (x-axis) vs Response time (y-axis) vs  #############
@@ -194,7 +257,6 @@ print("L  =", mm1.L)
 # Utilization = U   (x-axis)
 # Response time = W (y-axis)
 
-plt.figure(1) 
 
 customers = 100
 mu        = 65 
@@ -234,6 +296,9 @@ for i in range(0, len(lamb)):
 x.append(xTemp)
 y.append(yTemp)
 
+
+plt.subplot(1,2,1)
+
 for i in range(0, len(x)):
       if (i == 0):
             plt.plot(x[i], y[i], label=str('M/M/1'))
@@ -243,7 +308,7 @@ for i in range(0, len(x)):
       else:
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
-plt.axis([0,1.0,0,1.0])
+
 plt.legend(loc='best')
 plt.xlabel('Utilization (U)')
 plt.ylabel('Response time (W)')
@@ -257,7 +322,6 @@ plt.show()
 
 # Throughput/lambda   (x-axis)
 # Num customers L     (y-axis)
-plt.figure(2) 
 x = []
 y = []
 
@@ -290,6 +354,7 @@ for i in range(0, len(lamb)):
 x.append(xTemp)
 y.append(yTemp)
 
+plt.subplot(1,2,2)
 for i in range(0, len(x)):
       if (i == 0):
             plt.plot(x[i], y[i], label=str('M/M/1'))
@@ -311,7 +376,6 @@ plt.show()
 
 # Response time (W)   (x-axis)
 # Num customers L     (y-axis)
-plt.figure(3)
 x = []
 y = []
 
@@ -346,6 +410,8 @@ for i in range(0, len(lamb)):
 x.append(xTemp)
 y.append(yTemp)
 
+plt.figure()
+plt.subplot(1,2,1)
 for i in range(0, len(x)):
       if (i == 0):
             plt.plot(x[i], y[i], label=str('M/M/1'))
@@ -368,7 +434,6 @@ plt.show()
 # Utilization (U)     (x-axis)
 # Num customers L     (y-axis)
 
-plt.figure(4)  
 x = []
 y = []
 
@@ -399,6 +464,8 @@ for i in range(0, len(lamb)):
 
 x.append(xTemp)
 y.append(yTemp)
+
+plt.subplot(1,2,2)
 
 for i in range(0, len(x)):
       if (i == 0):
