@@ -9,7 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
-test =        True
+test =        False
 doTrace =     True
 doQueuelen =  True
 doLambdMus  = True
@@ -99,8 +99,9 @@ def calculateParameters(interArrival, packetSize, transCap):
 
 
 def generateTrace(workload, linkCap, packetSz):
+    print('#############   Generating trace file   ##########################')
     serviceRate = linkCap/packetSz
-    #simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+    
     arrRate = []
     avgInterArr = []
     
@@ -125,6 +126,7 @@ def generateTrace(workload, linkCap, packetSz):
 
 
 def queuLenVsTime(packetSz, linkCap):
+    print("###########  Queue length vs time ################################")
     serviceRate = linkCap/packetSz
     simPerc = [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     arrRate = []
@@ -144,7 +146,7 @@ def queuLenVsTime(packetSz, linkCap):
     time = []
 
     for p in range(0,200):
-        print(p)
+        print(p, end = " ")
         allQueues = []
         
         for z in range(0, len(workloads)):
@@ -197,6 +199,7 @@ def queuLenVsTime(packetSz, linkCap):
     plt.show()
     
 def calcLambMuWorkloads(packetSz, linkCap):
+    print("########### Lambda, mu and delay time for workloads ##############")
     serviceRate = linkCap/packetSz
     simPerc = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     arrRate = []
@@ -215,7 +218,7 @@ def calcLambMuWorkloads(packetSz, linkCap):
     queueDels = [0] * len(workloads)
 
     for p in range(0,10):
-        print(p)
+        print(p, end = " ")
         
         for z in range(0, len(workloads)):
             transCap = linkCap
@@ -295,6 +298,7 @@ if (test == True):
     print("System idel times are .................", idleTimes)
 
 if (doTrace == True):
+    print("######## Processing trace file given    ##########################")
     allQueues = []
     capacities = [1.00]
     

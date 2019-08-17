@@ -365,9 +365,9 @@ for i in range(0, len(x)):
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
 plt.legend(loc='best')
-plt.xlabel('Number of customers (L)')
+plt.xlabel('Average number of customers in system (L)')
 plt.ylabel('Throughput (lambda)')
-plt.title('Number of customers vs Throughput\n for single and multi server models')
+plt.title('Average number of customers in system vs Throughput\n for single and multi server models')
 plt.show()
 
 ###############################################################################
@@ -422,9 +422,9 @@ for i in range(0, len(x)):
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
 plt.legend(loc='best')
-plt.xlabel('Number of customers (L)')
+plt.xlabel('Average number of customers in system (L)')
 plt.ylabel('Response time (W)')
-plt.title('Number of customers vs Response time\n for single and multi server models')
+plt.title('Average number of customers in system vs Response time\n for single and multi server models')
 plt.show()
 
 ###############################################################################
@@ -477,9 +477,9 @@ for i in range(0, len(x)):
             plt.plot(x[i], y[i], label=str('M/M/' + str(servers[i-1])))
 
 plt.legend(loc='best')
-plt.xlabel('Number of customers (L)')
+plt.xlabel('Average number of customers in system (L)')
 plt.ylabel('Utilization (U)')
-plt.title('Number of customers vs Utilization\n for single and multi server models')
+plt.title('Average number of customers in system vs Utilization\n for single and multi server models')
 plt.show()
 
 
