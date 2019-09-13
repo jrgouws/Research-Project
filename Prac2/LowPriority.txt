@@ -1,4 +1,3 @@
-avgIntArrT_Fac,avgPackSize_Arr
 2661,376
 5914,252
 1827,168
