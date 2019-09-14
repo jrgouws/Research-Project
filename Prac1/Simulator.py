@@ -11,9 +11,9 @@ import numpy as np
 
 test =        False
 doTrace =     True
-doQueuelen =  True
-doLambdMus  = True
-genTrace =    True
+doQueuelen =  False
+doLambdMus  = False
+genTrace =    False
 
 # Read the text file and the inter-arrival time and the size
 def readCSV(filePath):
