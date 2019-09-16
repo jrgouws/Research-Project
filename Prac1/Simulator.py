@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 test =        False
-doTrace =     True
-doQueuelen =  False
+doTrace =     False
+doQueuelen =  True
 doLambdMus  = False
 genTrace =    False
 
