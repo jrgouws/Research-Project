@@ -10,8 +10,8 @@ from copy import deepcopy
 from PriorityQueuing import Packet, calcNoPriority, calcNonPreemptive, calcPreemptive
 
 doAveragePreemptive         = False
-doAverageNonPreemptive      = True
-doAverageNoPriority         = False
+doAverageNonPreemptive      = False
+doAverageNoPriority         = True
 
 averagedOver = 100
 linkCapacity = 1*10**6
@@ -21,7 +21,7 @@ if (doAverageNonPreemptive == True):
     print("########              Averaged Non-preemptive queuing      #######")
     print("##################################################################")
     
-    time = np.arange(0, 101*10**6, 1000000)      
+    time = np.arange(0, 101*10**6, 100000)      
     
           
     totalInterArrivalLow       = []
@@ -210,7 +210,7 @@ if (doAveragePreemptive == True):
     print("########            Averaged Preemptive queuing            #######")
     print("##################################################################")
     
-    time = np.arange(0, 120*10**6, 1000000)      
+    time = np.arange(0, 120*10**6, 100000)      
     
           
     totalInterArrivalLow       = []
@@ -397,7 +397,7 @@ if (doAverageNoPriority == True):
     print("########              Averaged No Priority queuing         #######")
     print("##################################################################")
     
-    time = np.arange(0, 101*10**6, 1000000)      
+    time = np.arange(0, 101*10**6, 100000)      
     
           
     totalInterArrivalLow       = []

@@ -8,10 +8,12 @@ Created on Mon Sep 16 09:40:23 2019
 import matplotlib.pyplot as plt
 from PriorityQueuing import readCSV, Packet, calcNoPriority, calcNonPreemptive, calcPreemptive
 import numpy as np
+import time as t
 
 doNonPreemptiveTrace        = False
 doPreemptiveTrace           = False
 doNoPriority                = True
+
 
 linkCapacity = 1*10**6
 
@@ -147,7 +149,8 @@ if (doNonPreemptiveTrace == True):
     print("##################################################################")
     print("########        Processing non-preemptive queuing          #######")
     print("##################################################################")
-    
+    timeNow = t.time()
+          
     packets = [[],[]]      
     time = []
     
@@ -268,13 +271,14 @@ if (doNonPreemptiveTrace == True):
     plt.ylabel('Customers waiting in queue')
     plt.title('Non-preemptive low and high queues Trace')
     plt.show()
+    print(t.time() - timeNow)
     
 
 if (doPreemptiveTrace == True):
     print("##################################################################")
     print("########            Processing preemptive queuing          #######")
     print("##################################################################")
-    
+    timeNow = t.time()
     packets = [[],[]]      
     time = []
     
@@ -324,6 +328,7 @@ if (doPreemptiveTrace == True):
     print("Average service rate (mu) --- (HIGH) ---", round(transCap/sizeAvg[1], 4), "packets/second")
     print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sizeAvg[0] + sizeAvg[1])/2), 4), "packets/second")
     
+    
     startEnd = [[],[]]
     arrivalTimes = []
     startEndLow = [[],[]]
@@ -354,24 +359,22 @@ if (doPreemptiveTrace == True):
     for i in range(0, len(time)):
         length = 0
         for j in range(0, len(arrivalTimes)):
-            if (time[i] >= arrivalTimes[j] and startEnd[1][j] > time[i]):
-                if (startEnd[0][j] > arrivalTimes[j]):
+              if (time[i] >= arrivalTimes[j] and startEnd[0][j] > time[i] and startEnd[0][j] > arrivalTimes[j]):
                     length += 1
+                    
         combined.append(length)
               
     for i in range(0, len(time)):
         length = 0
         for j in range(0, len(arrivalTimesLow)):
-            if (time[i] >= arrivalTimesLow[j] and startEndLow[1][j] > time[i]):
-                if (startEndLow[0][j] > arrivalTimesLow[j]):
-                    length += 1
+            if (time[i] >= arrivalTimesLow[j] and startEndLow[0][j] > time[i] and startEndLow[0][j] > arrivalTimesLow[j]):
+                  length += 1
         lowPriority.append(length)
                 
     for i in range(0, len(time)):
         length = 0
         for j in range(0, len(arrivalTimesHigh)):
-            if (time[i] >= arrivalTimesHigh[j] and startEndHigh[1][j] > time[i]):
-                if (startEndHigh[0][j] > arrivalTimesHigh[j]):
+            if (time[i] >= arrivalTimesHigh[j] and startEndHigh[0][j] > time[i] and startEndHigh[0][j] > arrivalTimesHigh[j]):
                     length += 1
         highPriority.append(length)
             
@@ -393,4 +396,4 @@ if (doPreemptiveTrace == True):
     plt.ylabel('Customers waiting in queue')
     plt.title('Preemptive queues low and high Trace')
     plt.show()
-
+    print(t.time() - timeNow)

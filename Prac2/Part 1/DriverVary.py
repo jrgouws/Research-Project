@@ -10,10 +10,10 @@ import numpy as np
 from copy import deepcopy
 
 doVaryingArrivalPreempt     = False
-doVaryingArrivalNonPreempt  = True
-doVaryingArrivalNoPriority  = False
+doVaryingArrivalNonPreempt  = False
+doVaryingArrivalNoPriority  = True
 
-averagedOver = 100
+averagedOver = 20
 arrRates = [2100,2300,2500,2700,2900] # Actually interArrivalTimes
 linkCapacity = 1*10**6
 
@@ -28,7 +28,7 @@ if (doVaryingArrivalNonPreempt == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 1000000)      
+        time = np.arange(0, 101*10**6, 100000)      
         
               
         totalInterArrivalLow       = []
@@ -234,7 +234,7 @@ if( doVaryingArrivalPreempt == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 1000000)      
+        time = np.arange(0, 101*10**6, 100000)      
         
               
         totalInterArrivalLow       = []
@@ -440,7 +440,7 @@ if( doVaryingArrivalNoPriority == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 1000000)      
+        time = np.arange(0, 101*10**6, 100000)      
         
               
         totalInterArrivalLow       = []

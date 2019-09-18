@@ -6,6 +6,7 @@ Created on Mon Aug  5 15:15:31 2019
 """
 
 import csv
+import time
 
 class Packet:
     def __init__(self, size, interArrivalTime, priority):
@@ -66,7 +67,7 @@ def calcNonPreemptive(transCap, packets):
             
         else:
             packets[0][i].arrivalTime = packets[0][i].interArrivalTime + packets[0][i - 1].arrivalTime
-            
+    
     # Calculate when the packets were received for high priority
     for i in range(0, len(packets[1])):
         if (i == 0):
@@ -75,16 +76,18 @@ def calcNonPreemptive(transCap, packets):
         else:
             packets[1][i].arrivalTime = packets[1][i].interArrivalTime + packets[1][i - 1].arrivalTime
     
-    # Calculate how long each packet takes to transmit for low priority
+        # Calculate how long each packet takes to transmit for low priority
     for i in range(0, len(packets[0])):
         packets[0][i].transTime = (packets[0][i].size/transCap)*10**6
-    
+      
     # Calculate how long each packet takes to transmit for high priority
     for i in range(0, len(packets[1])):
         packets[1][i].transTime = (packets[1][i].size/transCap)*10**6
-           
+        
+
     while (len(packets[0]) > 0 or len(packets[1]) > 0):
         # For the first packet arriving
+
         toProcess = None
         
         # If a high priority packet was received
@@ -106,8 +109,7 @@ def calcNonPreemptive(transCap, packets):
                     toProcess = packets[1][0]
                     currTime = packets[1][0].arrivalTime
                     packets[1] = packets[1][1:]
-                    
-                    
+                                        
                 else:
                     toProcess = packets[0][0]
                     currTime = packets[0][0].arrivalTime
