@@ -8,6 +8,7 @@ Created on Mon Aug  5 15:15:31 2019
 import csv
 import time
 
+
 class Packet:
     def __init__(self, size, interArrivalTime, priority):
         self.size             = size             
@@ -49,6 +50,7 @@ def getTraceInfo():
     print("Avg size Low          :", sum(packetSizeLow)/len(packetSizeLow))
     print("Avg size High         :", sum(packetSizeHigh)/len(packetSizeHigh))
     print("Total interarrival    :", (sum(interArrivalHigh)+sum(interArrivalLow))/(len(interArrivalHigh)+len(interArrivalLow)))
+    
 
 getTraceInfo()
 

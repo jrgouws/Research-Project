@@ -7,13 +7,14 @@ Created on Mon Sep 16 09:41:12 2019
 import matplotlib.pyplot as plt
 from PriorityQueuing import Packet, calcNoPriority, calcNonPreemptive, calcPreemptive
 import numpy as np
+from operator import add
 from copy import deepcopy
 
 doVaryingArrivalPreempt     = False
-doVaryingArrivalNonPreempt  = False
-doVaryingArrivalNoPriority  = True
+doVaryingArrivalNonPreempt  = True
+doVaryingArrivalNoPriority  = False
 
-averagedOver = 20
+averagedOver = 100
 arrRates = [2100,2300,2500,2700,2900] # Actually interArrivalTimes
 linkCapacity = 1*10**6
 
@@ -28,7 +29,7 @@ if (doVaryingArrivalNonPreempt == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 100000)      
+        time = np.arange(0, 101*10**6, 1000000)      
         
               
         totalInterArrivalLow       = []
@@ -72,13 +73,11 @@ if (doVaryingArrivalNonPreempt == True):
             # Get the parameters
             arrivalTimes,transTimes,queuingDelays,startEnd,respTimes,allPackets = calcNonPreemptive(transCap, packets)
             sizeAvg = [sum(packetSizeLow) / (float(len(packetSizeLow))), float(sum(packetSizeHigh))/len(packetSizeHigh)]
-            '''
             if (k == 0):
                 print("Link capacity --------------------------", transCap/10**6, "Mbps") 
                 print("Number of low priority packets ---------", len(packetSizeLow), "packets")
                 print("Number of high priority packets --------", len(packetSizeHigh), "packets")
                 print("Total number of packets ----------------", len(packetSizeLow) + len(packetSizeHigh), "packets" )
-            '''
             
             totalInterArrivalLow       += interArrivalLow
             totalInterArrivalHigh      += interArrivalHigh
@@ -113,19 +112,9 @@ if (doVaryingArrivalNonPreempt == True):
                     startEndHigh[1].append(i.endTime)
                     arrivalTimesHigh.append(i.arrivalTime)    
             
-            combined = []
             lowPriority = []
             highPriority = []
             
-            for i in range(0, len(time)):
-                length = 0
-                for j in range(0, len(arrivalTimes)):
-                    if (time[i] >= arrivalTimes[j] and startEnd[1][j] > time[i]):
-                        if (startEnd[0][j] > arrivalTimes[j]):
-                            length += 1
-                combined.append(length)
-           
-            allCombinedLengths[k] = deepcopy(combined)
                 
             for i in range(0, len(time)):
                 length = 0
@@ -146,7 +135,9 @@ if (doVaryingArrivalNonPreempt == True):
                 highPriority.append(length)
                 
             allLengthsHighPriority[k] = deepcopy(highPriority)       
-        '''
+      
+            allCombinedLengths[k] = list( map(add, highPriority, lowPriority) )
+        
         print("Average inter-arrival time -- (LOW) ----", round((sum(totalInterArrivalLow))/(len(totalInterArrivalLow)), 4), "us" )
         print("Average inter-arrival time -- (HIGH) ---", round((sum(totalInterArrivalHigh))/(len(totalInterArrivalHigh)) ,4), "us" )
         print("Average inter-arrival time -- (TOTAL) --", round((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow))/(len(totalInterArrivalHigh) + len(totalInterArrivalLow)), 4), "us" )
@@ -167,8 +158,8 @@ if (doVaryingArrivalNonPreempt == True):
         print("Average arrival rate (lambda) (TOTAL) --", round((len(totalAveragePacketSizeLow) + len(totalAveragePacketSizeHigh))/((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow)))*10**6, 4), "packets/second")
         print("Average service rate (mu) --- (LOW) ----", round(transCap/(sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)), 4), "packets/second")
         print("Average service rate (mu) --- (HIGH) ---", round(transCap/(sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)), 4), "packets/second")
-        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow) + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh))/2), 4), "packets/second")
-        '''    
+        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)*50000 + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)*arrRates[l]*10**-6)/(50000+arrRates[l]*10**-6)), 4), "packets/second")
+            
         time = time/10**6        
     
         averagedCombinedLength = [0] * len(allCombinedLengths[0])    
@@ -207,8 +198,9 @@ if (doVaryingArrivalNonPreempt == True):
             
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="High" + str(arrRates[t]))
-    plt.plot(time, averagedQueuesHigh, label="Low" + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]))
+        
+    plt.plot(time, averagedQueuesHigh, label="High " + str(arrRates[t]))
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
@@ -234,7 +226,7 @@ if( doVaryingArrivalPreempt == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 100000)      
+        time = np.arange(0, 125*10**6, 1000000)
         
               
         totalInterArrivalLow       = []
@@ -278,13 +270,13 @@ if( doVaryingArrivalPreempt == True):
             # Get the parameters
             arrivalTimes,transTimes,queuingDelays,startEnd,respTimes,allPackets = calcPreemptive(transCap, packets)
             sizeAvg = [sum(packetSizeLow) / (float(len(packetSizeLow))), float(sum(packetSizeHigh))/len(packetSizeHigh)]
-            '''
+            
             if (k == 0):
                 print("Link capacity --------------------------", transCap/10**6, "Mbps") 
                 print("Number of low priority packets ---------", len(packetSizeLow), "packets")
                 print("Number of high priority packets --------", len(packetSizeHigh), "packets")
                 print("Total number of packets ----------------", len(packetSizeLow) + len(packetSizeHigh), "packets" )
-            '''
+            
             print(l,k)
             totalInterArrivalLow       += interArrivalLow
             totalInterArrivalHigh      += interArrivalHigh
@@ -325,16 +317,6 @@ if( doVaryingArrivalPreempt == True):
             
             for i in range(0, len(time)):
                 length = 0
-                for j in range(0, len(arrivalTimes)):
-                    if (time[i] >= arrivalTimes[j] and startEnd[1][j] > time[i]):
-                        if (startEnd[0][j] > arrivalTimes[j]):
-                            length += 1
-                combined.append(length)
-           
-            allCombinedLengths[k] = deepcopy(combined)
-                
-            for i in range(0, len(time)):
-                length = 0
                 for j in range(0, len(arrivalTimesLow)):
                     if (time[i] >= arrivalTimesLow[j] and startEndLow[1][j] > time[i]):
                         if (startEndLow[0][j] > arrivalTimesLow[j]):
@@ -352,7 +334,9 @@ if( doVaryingArrivalPreempt == True):
                 highPriority.append(length)
                 
             allLengthsHighPriority[k] = deepcopy(highPriority)       
-        '''
+            allCombinedLengths[k] = list( map(add, highPriority, lowPriority) )
+
+        
         print("Average inter-arrival time -- (LOW) ----", round((sum(totalInterArrivalLow))/(len(totalInterArrivalLow)), 4), "us" )
         print("Average inter-arrival time -- (HIGH) ---", round((sum(totalInterArrivalHigh))/(len(totalInterArrivalHigh)) ,4), "us" )
         print("Average inter-arrival time -- (TOTAL) --", round((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow))/(len(totalInterArrivalHigh) + len(totalInterArrivalLow)), 4), "us" )
@@ -373,8 +357,8 @@ if( doVaryingArrivalPreempt == True):
         print("Average arrival rate (lambda) (TOTAL) --", round((len(totalAveragePacketSizeLow) + len(totalAveragePacketSizeHigh))/((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow)))*10**6, 4), "packets/second")
         print("Average service rate (mu) --- (LOW) ----", round(transCap/(sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)), 4), "packets/second")
         print("Average service rate (mu) --- (HIGH) ---", round(transCap/(sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)), 4), "packets/second")
-        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow) + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh))/2), 4), "packets/second")
-        '''    
+        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)*50000 + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)*arrRates[l]*10**-6)/(50000+arrRates[l]*10**-6)), 4), "packets/second")
+        
         time = time/10**6        
     
         averagedCombinedLength = [0] * len(allCombinedLengths[0])    
@@ -413,8 +397,8 @@ if( doVaryingArrivalPreempt == True):
             
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="High" + str(arrRates[t]))
-    plt.plot(time, averagedQueuesHigh, label="Low" + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low priority " + str(arrRates[t]))
+    plt.plot(time, averagedQueuesHigh, label="High priority " + str(arrRates[t]))
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
@@ -440,7 +424,7 @@ if( doVaryingArrivalNoPriority == True):
     allQueuesComb = []
     
     for l in range(0, len(arrRates)):      
-        time = np.arange(0, 101*10**6, 100000)      
+        time = np.arange(0, 101*10**6, 1000000)      
         
               
         totalInterArrivalLow       = []
@@ -484,13 +468,13 @@ if( doVaryingArrivalNoPriority == True):
             # Get the parameters
             arrivalTimes,transTimes,queuingDelays,startEnd,respTimes,allPackets = calcNoPriority(transCap, packets)
             sizeAvg = [sum(packetSizeLow) / (float(len(packetSizeLow))), float(sum(packetSizeHigh))/len(packetSizeHigh)]
-            '''
+            
             if (k == 0):
                 print("Link capacity --------------------------", transCap/10**6, "Mbps") 
                 print("Number of low priority packets ---------", len(packetSizeLow), "packets")
                 print("Number of high priority packets --------", len(packetSizeHigh), "packets")
                 print("Total number of packets ----------------", len(packetSizeLow) + len(packetSizeHigh), "packets" )
-            '''
+            
             print(l,k)
             totalInterArrivalLow       += interArrivalLow
             totalInterArrivalHigh      += interArrivalHigh
@@ -528,16 +512,7 @@ if( doVaryingArrivalNoPriority == True):
             combined = []
             lowPriority = []
             highPriority = []
-            
-            for i in range(0, len(time)):
-                length = 0
-                for j in range(0, len(arrivalTimes)):
-                    if (time[i] >= arrivalTimes[j] and startEnd[1][j] > time[i]):
-                        if (startEnd[0][j] > arrivalTimes[j]):
-                            length += 1
-                combined.append(length)
-           
-            allCombinedLengths[k] = deepcopy(combined)
+
                 
             for i in range(0, len(time)):
                 length = 0
@@ -557,8 +532,10 @@ if( doVaryingArrivalNoPriority == True):
                             length += 1
                 highPriority.append(length)
                 
-            allLengthsHighPriority[k] = deepcopy(highPriority)       
-        '''
+            allLengthsHighPriority[k] = deepcopy(highPriority)      
+            allCombinedLengths[k] = list( map(add, highPriority, lowPriority) )
+
+        
         print("Average inter-arrival time -- (LOW) ----", round((sum(totalInterArrivalLow))/(len(totalInterArrivalLow)), 4), "us" )
         print("Average inter-arrival time -- (HIGH) ---", round((sum(totalInterArrivalHigh))/(len(totalInterArrivalHigh)) ,4), "us" )
         print("Average inter-arrival time -- (TOTAL) --", round((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow))/(len(totalInterArrivalHigh) + len(totalInterArrivalLow)), 4), "us" )
@@ -579,8 +556,8 @@ if( doVaryingArrivalNoPriority == True):
         print("Average arrival rate (lambda) (TOTAL) --", round((len(totalAveragePacketSizeLow) + len(totalAveragePacketSizeHigh))/((sum(totalInterArrivalHigh) + sum(totalInterArrivalLow)))*10**6, 4), "packets/second")
         print("Average service rate (mu) --- (LOW) ----", round(transCap/(sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)), 4), "packets/second")
         print("Average service rate (mu) --- (HIGH) ---", round(transCap/(sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)), 4), "packets/second")
-        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow) + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh))/2), 4), "packets/second")
-        '''    
+        print("Average service rate (mu) --- (TOTAL) --", round(transCap/((sum(totalAveragePacketSizeLow)/len(totalAveragePacketSizeLow)*50000 + sum(totalAveragePacketSizeHigh)/len(totalAveragePacketSizeHigh)*arrRates[l]*10**-6)/(50000+arrRates[l]*10**-6)), 4), "packets/second")
+           
         time = time/10**6        
     
         averagedCombinedLength = [0] * len(allCombinedLengths[0])    
@@ -619,8 +596,8 @@ if( doVaryingArrivalNoPriority == True):
             
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="High" + str(arrRates[t]))
-    plt.plot(time, averagedQueuesHigh, label="Low" + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]))
+    plt.plot(time, averagedQueuesHigh, label="High " + str(arrRates[t]))
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
