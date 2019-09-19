@@ -11,12 +11,12 @@ from operator import add
 from copy import deepcopy
 
 doVaryingArrivalPreempt     = False
-doVaryingArrivalNonPreempt  = False
-doVaryingArrivalNoPriority  = True
+doVaryingArrivalNonPreempt  = True
+doVaryingArrivalNoPriority  = False
 
-averagedOver = 100
+averagedOver = 5
 print("Averaged over:", averagedOver)
-arrRates = [2100,2300,2500,2700,2900] # Actually interArrivalTimes
+arrRates = [2000] # Actually interArrivalTimes
 linkCapacity = 1*10**6
 
 
@@ -186,15 +186,6 @@ if (doVaryingArrivalNonPreempt == True):
         allQueuesComb.append(deepcopy(averagedCombinedLength))
         allQueuesHigh.append(deepcopy(averagedHighPrioLength))
         allQueuesLow.append(deepcopy(averagedLowPriorLength))
-    
-    #averagedQueuesHigh = [0]*len(allQueuesHigh[0])
-    
-    #for a in range(0, len(allQueuesHigh)):
-    #    for b in range(0, len(allQueuesHigh[a])):
-    #        averagedQueuesHigh[b] += allQueuesHigh[a][b]
-    #        
-    #        if (a == len(allQueuesHigh) - 1):
-    #            averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
     
     for a in range(0, len(allQueuesLow)):
           print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
@@ -390,14 +381,6 @@ if( doVaryingArrivalPreempt == True):
                 
     averagedQueuesHigh = [0]*len(allQueuesHigh[0])
     
-#    for a in range(0, len(allQueuesHigh)):
-#        for b in range(0, len(allQueuesHigh[a])):
-#            averagedQueuesHigh[b] += allQueuesHigh[a][b]
-#            
-#            if (a == len(allQueuesHigh) - 1):
-#                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
-#            
-    
     for a in range(0, len(allQueuesLow)):
           print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
           print("Average queue length high priority " + str(arrRates[a]) , round(sum(allQueuesHigh[a])/len(allQueuesHigh[a]), 4), "packets/second")
@@ -589,16 +572,6 @@ if( doVaryingArrivalNoPriority == True):
         allQueuesComb.append(deepcopy(averagedCombinedLength))
         allQueuesHigh.append(deepcopy(averagedHighPrioLength))
         allQueuesLow.append(deepcopy(averagedLowPriorLength))
-#                
-#    averagedQueuesHigh = [0]*len(allQueuesHigh[0])
-#    
-#    for a in range(0, len(allQueuesHigh)):
-#        for b in range(0, len(allQueuesHigh[a])):
-#            averagedQueuesHigh[b] += allQueuesHigh[a][b]
-#            
-#            if (a == len(allQueuesHigh) - 1):
-#                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
-            
     
     for a in range(0, len(allQueuesLow)):
           print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
