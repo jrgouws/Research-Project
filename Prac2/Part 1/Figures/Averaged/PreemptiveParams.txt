@@ -1,0 +1,28 @@
+Link capacity -------------------------- 1.0 Mbps
+Number of low priority packets --------- 50000 packets
+Number of high priority packets -------- 40000 packets
+Total number of packets ---------------- 90000 packets
+Average inter-arrival time -- (LOW) ---- 1992.0008 us
+Average inter-arrival time -- (HIGH) --- 2485.7448 us
+Average inter-arrival time -- (TOTAL) -- 2211.4426 us
+Average transmission time --- (LOW) ---- 1000.5359 us
+Average transmission time --- (HIGH) --- 1000.3137 us
+Average transmission time --- (TOTAL) -- 1000.4371 us
+Average response time ------- (LOW)  --- 16520435.8291 us
+Average response time ------- (HIGH) --- 1672.9732 us
+Average response time ------- (TOTAL) -- 9178763.4487 us
+The average packet size ----- (LOW) ---- 1000.5359 bits
+The average packet size ----- (HIGH) --- 1000.3137 bits
+The average packet size ----- (TOTAL) -- 1000.4371 bits
+Average delays -------------- (LOW) ---- 16519435.2932 us
+Average delays -------------- (HIGH) --- 672.6596 us
+Average delays -------------- (TOTAL) -- 9177763.0116 us
+Average arrival rate (lambda) (LOW) ---- 502.0078 packets/second
+Average arrival rate (lambda) (HIGH) --- 402.2939 packets/second
+Average arrival rate (lambda) (TOTAL) -- 904.3017 packets/second
+Average service rate (mu) --- (LOW) ---- 999.4644 packets/second
+Average service rate (mu) --- (HIGH) --- 999.6864 packets/second
+Average service rate (mu) --- (TOTAL) -- 899.6179 packets/second
+Average queue length  (LOW) ------------- 6883.1167 packets/second
+Average queue length  (HIGH) ------------ 0.0 packets/second
+Average queue length  (TOTAL) ----------- 6883.4 packets/second

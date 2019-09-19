@@ -11,10 +11,11 @@ from operator import add
 from copy import deepcopy
 
 doVaryingArrivalPreempt     = False
-doVaryingArrivalNonPreempt  = True
-doVaryingArrivalNoPriority  = False
+doVaryingArrivalNonPreempt  = False
+doVaryingArrivalNoPriority  = True
 
 averagedOver = 100
+print("Averaged over:", averagedOver)
 arrRates = [2100,2300,2500,2700,2900] # Actually interArrivalTimes
 linkCapacity = 1*10**6
 
@@ -186,34 +187,36 @@ if (doVaryingArrivalNonPreempt == True):
         allQueuesHigh.append(deepcopy(averagedHighPrioLength))
         allQueuesLow.append(deepcopy(averagedLowPriorLength))
     
-    averagedQueuesHigh = [0]*len(allQueuesHigh[0])
+    #averagedQueuesHigh = [0]*len(allQueuesHigh[0])
     
-    for a in range(0, len(allQueuesHigh)):
-        for b in range(0, len(allQueuesHigh[a])):
-            averagedQueuesHigh[b] += allQueuesHigh[a][b]
-            
-            if (a == len(allQueuesHigh) - 1):
-                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
-            
-            
+    #for a in range(0, len(allQueuesHigh)):
+    #    for b in range(0, len(allQueuesHigh[a])):
+    #        averagedQueuesHigh[b] += allQueuesHigh[a][b]
+    #        
+    #        if (a == len(allQueuesHigh) - 1):
+    #            averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
+    
+    for a in range(0, len(allQueuesLow)):
+          print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
+          print("Average queue length high priority " + str(arrRates[a]) , round(sum(allQueuesHigh[a])/len(allQueuesHigh[a]), 4), "packets/second")
+          
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]))
-        
-    plt.plot(time, averagedQueuesHigh, label="High " + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]) + " us")
+    
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('Non-Preemptive Varying arrRate High LowPriority')
+    plt.title('Non-Preemptive Varying arrRate Low LowPriority')
     plt.show()
     
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesComb[t], label=str(arrRates[t]))
+        plt.plot(time, allQueuesHigh[t], label="High " + str(arrRates[t]) + " us")
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('Non-Preemptive Varying arrRate Combined Priority')
+    plt.title('Non-Preemptive Varying arrRate High Priority')
     plt.show()
     
 if( doVaryingArrivalPreempt == True):
@@ -387,33 +390,36 @@ if( doVaryingArrivalPreempt == True):
                 
     averagedQueuesHigh = [0]*len(allQueuesHigh[0])
     
-    for a in range(0, len(allQueuesHigh)):
-        for b in range(0, len(allQueuesHigh[a])):
-            averagedQueuesHigh[b] += allQueuesHigh[a][b]
-            
-            if (a == len(allQueuesHigh) - 1):
-                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
-            
-            
+#    for a in range(0, len(allQueuesHigh)):
+#        for b in range(0, len(allQueuesHigh[a])):
+#            averagedQueuesHigh[b] += allQueuesHigh[a][b]
+#            
+#            if (a == len(allQueuesHigh) - 1):
+#                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
+#            
+    
+    for a in range(0, len(allQueuesLow)):
+          print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
+          print("Average queue length high priority " + str(arrRates[a]) , round(sum(allQueuesHigh[a])/len(allQueuesHigh[a]), 4), "packets/second")
+          
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="Low priority " + str(arrRates[t]))
-    plt.plot(time, averagedQueuesHigh, label="High priority " + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]) + " us")
+    
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('Non-Preemptive Varying arrRate High LowPriority')
+    plt.title('Preemptive Varying arrRate Low LowPriority')
     plt.show()
     
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesComb[t], label=str(arrRates[t]))
+        plt.plot(time, allQueuesHigh[t], label="High " + str(arrRates[t]) + " us")
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('Preemptive Varying arrRate Combined Priority')
+    plt.title('Preemptive Varying arrRate High Priority')
     plt.show()
-    
 if( doVaryingArrivalNoPriority == True):
     print("##################################################################")
     print("########            Averaged No Priority varying arrRate   #######")
@@ -583,32 +589,36 @@ if( doVaryingArrivalNoPriority == True):
         allQueuesComb.append(deepcopy(averagedCombinedLength))
         allQueuesHigh.append(deepcopy(averagedHighPrioLength))
         allQueuesLow.append(deepcopy(averagedLowPriorLength))
-                
-    averagedQueuesHigh = [0]*len(allQueuesHigh[0])
+#                
+#    averagedQueuesHigh = [0]*len(allQueuesHigh[0])
+#    
+#    for a in range(0, len(allQueuesHigh)):
+#        for b in range(0, len(allQueuesHigh[a])):
+#            averagedQueuesHigh[b] += allQueuesHigh[a][b]
+#            
+#            if (a == len(allQueuesHigh) - 1):
+#                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
+            
     
-    for a in range(0, len(allQueuesHigh)):
-        for b in range(0, len(allQueuesHigh[a])):
-            averagedQueuesHigh[b] += allQueuesHigh[a][b]
-            
-            if (a == len(allQueuesHigh) - 1):
-                averagedQueuesHigh[b] = averagedQueuesHigh[b]/averagedOver
-            
-            
+    for a in range(0, len(allQueuesLow)):
+          print("Average queue length low priority " + str(arrRates[a]), round(sum(allQueuesLow[a])/len(allQueuesLow[a]), 4), "packets/second")
+          print("Average queue length high priority " + str(arrRates[a]) , round(sum(allQueuesHigh[a])/len(allQueuesHigh[a]), 4), "packets/second")
+          
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]))
-    plt.plot(time, averagedQueuesHigh, label="High " + str(arrRates[t]))
+        plt.plot(time, allQueuesLow[t], label="Low " + str(arrRates[t]) + " us")
+    
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('Non-Preemptive Varying arrRate High LowPriority')
+    plt.title('No priority Varying arrRate Low LowPriority')
     plt.show()
     
     plt.figure()
     for t in range(0, len(allQueuesHigh)):
-        plt.plot(time, allQueuesComb[t], label=str(arrRates[t]))
+        plt.plot(time, allQueuesHigh[t], label="High " + str(arrRates[t]) + " us")
     plt.legend(loc='best')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Customers waiting in queue')
-    plt.title('No-Priority Varying arrRate Combined Priority')
+    plt.title('No priority Varying arrRate High Priority')
     plt.show()

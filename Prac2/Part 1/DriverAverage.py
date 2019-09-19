@@ -14,7 +14,7 @@ doAveragePreemptive         = False
 doAverageNonPreemptive      = False
 doAverageNoPriority         = True
 
-averagedOver = 100
+averagedOver = 150
 linkCapacity = 1*10**6
   
 if (doAverageNonPreemptive == True):
